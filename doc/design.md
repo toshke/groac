@@ -28,12 +28,12 @@ of runner manager instance*
 1. AWS implementation only, with code design allowing for extension
 
 *Rationale: GitLab community seems to be having issue with older `docker-machine` implementation for AWS,
-so in a way AWS is fix for existing problem, whereas GCP and Azure are extra
+so in a way AWS is fix for existing problem, whereas GCP and Azure are extra*
 
 2. Implenetation as Custom Gitlab Executor
 
 *Rationale: [Gitlab custom executor](https://docs.gitlab.com/runner/executors/custom.html) interface is well documented and easy to integrate with.
-Developing this as plugin would require deeper research and understanding of GitLab runner internals and code. 
+Developing this as plugin would require deeper research and understanding of GitLab runner internals and code.*
 
 3. AWS will support Amazon Linux 2 AMIs only, through default provisioning script working on this OS. Code structure will 
    allow for different OSs, and MVP will include OS discovery. 
