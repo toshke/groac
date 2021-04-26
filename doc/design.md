@@ -42,7 +42,7 @@ Developing this as plugin would require deeper research and understanding of Git
    for future implementation of cache storage and retrieval from build manager, based on command line argument. 
 
 *Rationale: Restoring and saving distributed cache from manager requires secure file copy operations and introduces
-complexity in MVP. Also, large file SCP may not be suitable for large artifacts. *
+complexity in MVP. Also, large file SCP may not be suitable for large artifacts.*
 
 
 
