@@ -5,7 +5,7 @@
 
 - [ ] - AWS implementation
 
-- [ ] - Running in docker by default
+- [ ] - Running in docker or on host by default, based on command line options
 
 - [ ] - State saved in local file `$HOME/.groac/state.json` 
 

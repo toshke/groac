@@ -1,0 +1,7 @@
+services:
+    golang:
+        build:
+            context: tooling
+            dockerfile: Dockerfile
+        volumes:
+            - .:/src
