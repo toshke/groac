@@ -1,6 +1,6 @@
 ## Design decisions
 
-1. GoLang as an implementation language
+1. GoLang (current 1.16 ) as an implementation language
 
 *Rationale: Current gitlab runner is implemented in GoLang, and seems to be community language of choice 
 when it comes to system programming. Alternative is Rust, though with steep learning curve and lower popularity, 
@@ -19,6 +19,9 @@ of runner manager instance*
 
 5. Default build image will be either `ubuntu:latest` or `alpine:latest`. If no image specified in the `.gitlab.ci.yml` file, 
    build will still be executed within docker container. 
+
+6. Waiting for available executor should be done either in `config` or `prepare` stage. `config` looks more appropriate based on the documentation, as it contains `hostname` variable. 
+
 
 
 *Rationale: SSH is portable between different cloud providers*
