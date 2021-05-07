@@ -1,4 +1,4 @@
-package cli
+package cmd
 
 import (
 	_ "github.com/toshke/groac/internal/executor"

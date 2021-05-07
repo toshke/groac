@@ -5,3 +5,7 @@ services:
             dockerfile: Dockerfile
         volumes:
             - .:/src
+            - gopath:/go
+
+volumes:
+   gopath:
