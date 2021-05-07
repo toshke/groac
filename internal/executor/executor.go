@@ -1,10 +1,10 @@
 package executor
 
 import (
-	"internal/job"
+	. "github.com/toshke/groac/internal/job"
 )
 
 type VmState struct {
-	jobExecuted job.Job
+	jobExecuted Job
 	platform    string
 }
