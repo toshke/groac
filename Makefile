@@ -5,7 +5,7 @@ build:
 .PHONY: build
 
 test:
-	go test ./...
+	go clean -testcache && go test ./...
 
 
 .EXPORT_ALL_VARIABLES:
