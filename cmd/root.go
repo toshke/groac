@@ -34,7 +34,7 @@ var (
 		Use:   "config",
 		Short: "config stage custom gitlab runner executor",
 		Run: func(cmd *cobra.Command, args []string) {
-			groacCleanup()
+			groacConfig()
 		},
 	}
 	prepareCmd = &cobra.Command{
@@ -55,7 +55,7 @@ var (
 		Use:   "cleanup",
 		Short: "cleanup stage custom gitlab runner executor",
 		Run: func(cmd *cobra.Command, args []string) {
-			groacStep()
+			groacCleanup()
 		},
 	}
 )
