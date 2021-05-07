@@ -1,8 +1,9 @@
-name: GitHub Actions Demo
+name: Go build
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - run: ls -la
       - run: make build
       - run: ls -la build/
