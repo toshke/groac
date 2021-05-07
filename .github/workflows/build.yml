@@ -6,6 +6,5 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
-      - run: go version
-      - run: make _build
+      - run: go version && make _build
       - run: ls -la build/
