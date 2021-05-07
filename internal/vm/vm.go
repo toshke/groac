@@ -3,8 +3,8 @@ package vm
 import "fmt"
 
 type Vm struct {
-	Name                string
-	ExecutedCmdsCounter int
+	Name                string `json:"name"`
+	ExecutedCmdsCounter int    `json:"counter"`
 }
 
 func (machine *Vm) Execute(cmd string) {
