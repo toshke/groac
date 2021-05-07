@@ -1,5 +1,9 @@
 package main
 
+import (
+	clilib "github.com/toshke/groac/lib/cli"
+)
+
 func main() {
-	println("Running groac-prepare")
+	clilib.GroacExecCli()
 }

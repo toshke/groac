@@ -1,5 +1,5 @@
-module executor
+module github.com/toshke/groac/internal/executor
 
-replace job => ../job
+replace github.com/toshke/groac/internal => ../
 
 go 1.16
