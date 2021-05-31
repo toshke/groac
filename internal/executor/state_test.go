@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/go-playground/assert"
 	"github.com/toshke/groac/internal/vm"
@@ -38,16 +39,26 @@ func TestConcurrentSaveState(t *testing.T) {
 		// clear the state file first
 		state := NewExecutorState(0)
 		state.Save()
-		iterationsNum := 100
+		iterationsNum := 200
 		var waitGroup sync.WaitGroup
 		waitGroup.Add(iterationsNum)
 		c := make(chan int, iterationsNum)
+		rs := make(chan int, iterationsNum)
+		rand.Seed(time.Now().UnixNano())
+		// create N routines, add single machine in each of them, and make
+		// sure they are all added, e.g. no deadlock or write concurrency issues
 		for i := 0; i < iterationsNum; i++ {
 			c <- i
+			rs <- rand.Intn(150)
 			go func() {
+
+				// we want to randomise the order of go routines. While it should
+				// be random in theory, modern processors seems to just start all the routines
+				// before counter value is read from the channel
+				rand_sleep := <-rs
 				local_counter := <-c
-				fmt.Printf("Process %v\n", local_counter)
-				state := NewExecutorState(rand.Intn(1000))
+				fmt.Printf("Process %v - delay write for %v \n", local_counter, rand_sleep)
+				state := NewExecutorState(rand_sleep)
 				state.LockDataFile()
 				state.FsLoad()
 				var newMachine vm.Vm
