@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/howeyc/fsnotify"
-	. "github.com/toshke/groac/internal/vm"
+	"github.com/toshke/groac/internal/vm"
 	"golang.org/x/sys/unix"
 )
 
@@ -22,7 +22,7 @@ func check(e error) {
 }
 
 type executorState struct {
-	MachinesList      []Vm `json:"machines"`
+	MachinesList      []vm.Vm `json:"machines"`
 	dataFilePath      string
 	stateWriteDeferMs int
 	lockedFd          *os.File
