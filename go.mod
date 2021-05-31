@@ -8,5 +8,5 @@ require (
 	github.com/go-playground/assert v1.2.1
 	github.com/go-playground/assert/v2 v2.0.1
 	github.com/rs/zerolog v1.21.0
-	github.com/spf13/afero v1.6.0
+	golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4
 )
