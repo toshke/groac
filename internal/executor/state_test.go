@@ -39,6 +39,7 @@ func TestConcurrentSaveState(t *testing.T) {
 		// clear the state file first
 		state := NewExecutorState(0)
 		state.Save()
+		state.EnableReload()
 		iterationsNum := 200
 		var waitGroup sync.WaitGroup
 		waitGroup.Add(iterationsNum)
@@ -72,7 +73,9 @@ func TestConcurrentSaveState(t *testing.T) {
 		}
 
 		waitGroup.Wait()
-		state.FsLoad()
+		// Allow full 5 seconds for inotify to catch up with writes. In real world
+		// this will be inter-process not inter-routine communication
+		time.Sleep(time.Duration(5) * time.Second)
 		assert.Equal(t, len(state.MachinesList), iterationsNum)
 	})
 }

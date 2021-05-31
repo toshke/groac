@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"time"
 
+	"github.com/howeyc/fsnotify"
 	. "github.com/toshke/groac/internal/vm"
 	"golang.org/x/sys/unix"
 )
@@ -109,26 +111,32 @@ func (state *executorState) UnlockDataFile() {
 	}
 }
 
-func withExclusiveBlocking(pathname string, callback func(*os.File)) error {
-	fh, err := os.OpenFile(pathname, os.O_RDWR|os.O_CREATE, os.ModePerm)
+func (state *executorState) EnableReload() {
+	watcher, err := fsnotify.NewWatcher()
 	check(err)
-	defer fh.Close()
-	if err = unix.Flock(int(fh.Fd()), unix.LOCK_EX); err != nil {
-		return err
-	}
-	callback(fh)
-	return nil
-}
 
-func withSharedBlocking(pathname string, callback func(*os.File)) error {
-	fh, err := os.Open(pathname)
-	if err != nil {
-		return err
-	}
-	defer fh.Close()
-	if err = unix.Flock(int(fh.Fd()), unix.LOCK_SH); err != nil {
-		return err
-	}
-	callback(fh)
-	return nil
+	// done := make(chan bool)
+
+	// Process events
+	go func() {
+		for {
+			select {
+			case ev := <-watcher.Event:
+				log.Println("event:", ev)
+				state.FsLoad()
+			case err := <-watcher.Error:
+				log.Println("error:", err)
+			}
+		}
+	}()
+
+	err = watcher.Watch(state.dataFilePath)
+	check(err)
+
+	// Hang so program doesn't exit
+	// <-done
+
+	/* ... do stuff ... */
+	// watcher.Close()
+
 }
