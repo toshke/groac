@@ -34,7 +34,8 @@ func TestSaveState(t *testing.T) {
 	})
 }
 
-func TestConcurrentSaveState(t *testing.T) {
+// test multiple writers multiple readers and fsnotify (auto reload from the disk when file changes)
+func TestConcurrentSaveLoadState(t *testing.T) {
 	t.Run("verify save state concurrent", func(t *testing.T) {
 		// clear the state file first
 		state := NewExecutorState(0)
