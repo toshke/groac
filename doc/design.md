@@ -33,6 +33,8 @@ of runner manager instance*
 *Rationale: GitLab community seems to be having issue with older `docker-machine` implementation for AWS,
 so in a way AWS is fix for existing problem, whereas GCP and Azure are extra*
 
+[Official GitLab docs referring to docker-machine](https://docs.gitlab.com/runner/configuration/runner_autoscale_aws/)
+
 2. Implenetation as Custom Gitlab Executor
 
 *Rationale: [Gitlab custom executor](https://docs.gitlab.com/runner/executors/custom.html) interface is well documented and easy to integrate with.
