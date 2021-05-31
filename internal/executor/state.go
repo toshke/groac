@@ -2,15 +2,16 @@ package executor
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"time"
 
 	"github.com/howeyc/fsnotify"
+	"github.com/rs/zerolog/log"
 	"github.com/toshke/groac/internal/vm"
 	"golang.org/x/sys/unix"
 )
@@ -122,21 +123,15 @@ func (state *executorState) EnableReload() {
 		for {
 			select {
 			case ev := <-watcher.Event:
-				log.Println("event:", ev)
+				log.Info().Msg(fmt.Sprintf("event: %v", ev))
 				state.FsLoad()
 			case err := <-watcher.Error:
-				log.Println("error:", err)
+				log.Info().Msg(fmt.Sprintf("watch err: %v", err))
 			}
 		}
 	}()
 
 	err = watcher.Watch(state.dataFilePath)
 	check(err)
-
-	// Hang so program doesn't exit
-	// <-done
-
-	/* ... do stuff ... */
-	// watcher.Close()
 
 }
