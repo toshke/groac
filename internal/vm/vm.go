@@ -97,7 +97,6 @@ func (conn *SSHConnnection) Execute(env map[string]string, command string, stdou
 	var commandWithEnv strings.Builder
 	//set session environment
 	for key, value := range env {
-		fmt.Printf("Set %s=%s\n", key, value)
 		// assumption here that remote servers shell accepts export syntax
 		commandWithEnv.WriteString(fmt.Sprintf("export %s=%s\n", key, shellescape.Quote(value)))
 	}
