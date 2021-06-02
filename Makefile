@@ -1,7 +1,7 @@
 
 
 EXEC_GO_CMD := docker-compose run --rm  go 
-EXEC_SSH_CMD := docker-compose exec sshTestServer
+EXEC_SSH_CMD := docker-compose exec -T sshTestServer
 
 build:
 	rm -rf build && mkdir -p build && go build -o build/groac	
