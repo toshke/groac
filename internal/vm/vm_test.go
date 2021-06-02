@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -21,7 +22,7 @@ func TestNewSSHParams(t *testing.T) {
 	})
 }
 
-func TestSSHConnect(t *testing.T) {
+func TestSSHConnectAndExecute(t *testing.T) {
 	if os.Getenv("ENABLE_INTEGRATION_TESTS") != "1" {
 		return
 	}
@@ -49,13 +50,12 @@ func TestSSHConnect(t *testing.T) {
 		cmd := "echo \"Hello World! Value = ${VARIABLE_1}\""
 
 		var stdOut strings.Builder
-		// stdOutBuffer.Write()
-		// stdOut := os.Stdout
 		err = sshConnection.Execute(executionEnvironment, cmd, &stdOut, &stdOut)
 		assert.Equal(t, err, nil)
 
 		output := stdOut.String()
 		expectedOutput := "Hello World! Value = *Variable \"1\" value*\n"
 		assert.Equal(t, output, expectedOutput)
+		fmt.Printf("Got %s from the server", output)
 	})
 }
