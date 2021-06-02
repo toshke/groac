@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+    go: 
+        image: golang:1.16.3 
+        volumes:
+            - test_data:/root/.groac
+            - golib:/go
+            - .:/src
+        working_dir: /src
+        links:
+            - sshTestServer
+        environment: 
+            ENABLE_INTEGRATION_TESTS: '1'
+            INTEGRATION_TEST_SSH_PORT: '2222'
+            INTEGRATION_TEST_SSH_HOST: sshTestServer
+    sshTestServer:
+        image: linuxserver/openssh-server
+        environment: 
+            USER_NAME: gitlab-runner
+            PUBLIC_KEY_FILE: '/data/vms_key.pem.pub'
+        volumes:
+            - test_data:/data
+
+volumes:
+    test_data:
+    golib:

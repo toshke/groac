@@ -2,11 +2,14 @@ package vm
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
+	"gopkg.in/alessio/shellescape.v1"
 )
 
 func check(e error) {
@@ -30,6 +33,11 @@ type sshConnectionParams struct {
 	publicKeyPath  string
 	hostname       string
 	port           int16
+}
+
+type SSHConnnection struct {
+	params *sshConnectionParams
+	client *ssh.Client
 }
 
 func newSshConnectionParams() *sshConnectionParams {
@@ -58,15 +66,11 @@ func (params *sshConnectionParams) initPrivateKey() {
 	}
 }
 
-type SSHConnnection struct {
-	params *sshConnectionParams
-}
-
 // connect to ssh endpoint and return connection
-func (conn *SSHConnnection) Connect() (*ssh.Client, error) {
+func (conn *SSHConnnection) Connect() error {
 	auth, err := publicKeyAuth(conn.params.privateKeyPath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	sshConfig := &ssh.ClientConfig{
 		User: conn.params.username,
@@ -78,9 +82,32 @@ func (conn *SSHConnnection) Connect() (*ssh.Client, error) {
 	destination := fmt.Sprintf("%s:%d", conn.params.hostname, conn.params.port)
 	sshConnection, sshError := ssh.Dial("tcp", destination, sshConfig)
 	if sshError != nil {
-		return nil, fmt.Errorf("failed to dial: %s", sshError)
+		return fmt.Errorf("failed to dial: %s", sshError)
 	}
-	return sshConnection, nil
+	conn.client = sshConnection
+	return nil
+}
+
+func (conn *SSHConnnection) Execute(env map[string]string, command string, stdout io.Writer, stderr io.Writer) error {
+	// open new session
+	session, err := conn.client.NewSession()
+	check(err)
+	defer session.Close()
+
+	var commandWithEnv strings.Builder
+	//set session environment
+	for key, value := range env {
+		fmt.Printf("Set %s=%s\n", key, value)
+		// assumption here that remote servers shell accepts export syntax
+		commandWithEnv.WriteString(fmt.Sprintf("export %s=%s\n", key, shellescape.Quote(value)))
+	}
+	commandWithEnv.WriteString(command)
+
+	//execute command by passing standard out and err streams
+	session.Stdout = stdout
+	session.Stderr = stderr
+	return session.Run(commandWithEnv.String())
+
 }
 
 func (machine *Vm) Execute(cmd string) {
