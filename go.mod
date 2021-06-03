@@ -6,6 +6,8 @@ require github.com/spf13/cobra v1.1.3
 
 require (
 	github.com/alessio/shellescape v1.4.1 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.3.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.8.0
 	github.com/go-playground/assert v1.2.1
 	github.com/go-playground/assert/v2 v2.0.1
 	github.com/howeyc/fsnotify v0.9.0

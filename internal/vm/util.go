@@ -85,6 +85,22 @@ func publicKeyAuth(file string) (ssh.AuthMethod, error) {
 	return ssh.PublicKeys(key), nil
 }
 
+func publicKeyMaterial(file string) ([]byte, error) {
+	buffer, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return buffer, nil
+}
+
+func publicKeyFingerPrint(keyMaterial []byte) string {
+	pk, _, _, _, err := ssh.ParseAuthorizedKey(keyMaterial)
+	check(err)
+	f := ssh.FingerprintLegacyMD5(pk)
+	return f
+}
+
 // generate private / public key pair
 func generateKeyPair(savePrivateFileTo string, savePublicFileTo string) (err error) {
 	bitSize := 4096
