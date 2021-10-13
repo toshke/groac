@@ -28,6 +28,22 @@ type VmProvisionerAws struct {
 	ssmClient       *ssm.Client
 }
 
+type SsmIface interface {
+	GetParameter(context.Context, *ssm.GetParameterInput, ...func(*ssm.Options)) (*ssm.GetParameterOutput, error)
+}
+
+type Ec2Iface interface {
+	RunInstances(context.Context, *ec2.RunInstancesInput, ...func(*ec2.Options)) (*ec2.RunInstancesOutput, error)
+	DescribeKeyPairs(context.Context, *ec2.DescribeKeyPairsInput, ...func(*ec2.Options)) (*ec2.DescribeKeyPairsOutput, error)
+	ImportKeyPair(context.Context, *ec2.ImportKeyPairInput, ...func(*ec2.Options)) (*ec2.ImportKeyPairOutput, error)
+	DescribeSubnets(context.Context, *ec2.DescribeSubnetsInput, ...func(*ec2.Options)) (*ec2.DescribeSubnetsOutput, error)
+	DescribeAvailabilityZones(context.Context, *ec2.DescribeAvailabilityZonesInput, ...func(*ec2.Options)) (*ec2.DescribeAvailabilityZonesOutput, error)
+	DescribeVpcs(context.Context, *ec2.DescribeVpcsInput, ...func(*ec2.Options)) (*ec2.DescribeVpcsOutput, error)
+	CreateSecurityGroup(context.Context, *ec2.CreateSecurityGroupInput, ...func(*ec2.Options)) (*ec2.CreateSecurityGroupOutput, error)
+	AuthorizeSecurityGroupEgress(context.Context, *ec2.AuthorizeSecurityGroupEgressInput, ...func(*ec2.Options)) (*ec2.AuthorizeSecurityGroupEgressOutput, error)
+	AuthorizeSecurityGroupIngress(context.Context, *ec2.AuthorizeSecurityGroupIngressInput, ...func(*ec2.Options)) (*ec2.AuthorizeSecurityGroupIngressOutput, error)
+}
+
 func NewVmProvisionerAws() *VmProvisionerAws {
 	var provisioner VmProvisionerAws
 	cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -85,7 +101,7 @@ func (provisioner *VmProvisionerAws) Provision(groacConfig map[string]string, se
 // return keypair used for groac. Discover based on default key pair name, and verify
 // fingerprints. If fingerprint does not match, created new key pair for given name with
 // timestamp suffix
-func discoverKeyPair(client *ec2.Client, groacConfig map[string]string, publicKeyPath string) (*string, error) {
+func discoverKeyPair(client Ec2Iface, groacConfig map[string]string, publicKeyPath string) (*string, error) {
 	var keyPairName *string
 	if val, ok := groacConfig["awsKeyPairName"]; ok {
 		keyPairName = aws.String(val)
@@ -141,7 +157,7 @@ func discoverKeyPair(client *ec2.Client, groacConfig map[string]string, publicKe
 
 // pull out subnet from configuration, or discover default subnet. Azs are being
 // picked by round robin based on sequence of the machine being provisioned
-func discoverSubnetId(client *ec2.Client, groacConfig map[string]string, sequence int) (*string, *string, error) {
+func discoverSubnetId(client Ec2Iface, groacConfig map[string]string, sequence int) (*string, *string, error) {
 	if val, ok := groacConfig["SubnetIds"]; ok {
 		allValues := strings.Split(val, ",")
 		subnetId := &allValues[sequence%len(allValues)]
@@ -189,7 +205,7 @@ func discoverSubnetId(client *ec2.Client, groacConfig map[string]string, sequenc
 // pull out security group ids from configuration or create one
 // if none passed in. Auto-created sg allows outbound access to whole of the internet
 // and inbound access to ssh from specified or discvered vpc
-func discoverSecurityGroupIds(client *ec2.Client, vpcId *string, groacConfig map[string]string) ([]string, error) {
+func discoverSecurityGroupIds(client Ec2Iface, vpcId *string, groacConfig map[string]string) ([]string, error) {
 	if val, ok := groacConfig["SecurityGroupIds"]; ok {
 		allValues := strings.Split(val, ",")
 		return allValues, nil
@@ -252,7 +268,7 @@ func discoverSecurityGroupIds(client *ec2.Client, vpcId *string, groacConfig map
 	}
 }
 
-func discoverAmiId(client *ssm.Client, groacConfig map[string]string) (*string, error) {
+func discoverAmiId(client SsmIface, groacConfig map[string]string) (*string, error) {
 	if val, ok := groacConfig["AmiId"]; ok {
 		return &val, nil
 	} else {
